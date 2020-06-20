@@ -38,8 +38,7 @@ public class ChatClient extends AbstractClient
    * @param clientUI The interface type variable.
    */
   
-  public ChatClient(String host, int port, ChatIF clientUI) 
-    throws IOException 
+  public ChatClient(String host, int port, ChatIF clientUI) throws IOException 
   {
     super(host, port); //Call the superclass constructor
     this.clientUI = clientUI;
@@ -54,7 +53,7 @@ public class ChatClient extends AbstractClient
    *
    * @param msg The message from the server.
    */
-  public void handleMessageFromServer(Object msg) 
+  public void handleMessageFromServer(Object msg)
   {
     clientUI.display(msg.toString());
   }
@@ -72,8 +71,7 @@ public class ChatClient extends AbstractClient
     }
     catch(IOException e)
     {
-      clientUI.display
-        ("Could not send message to server.  Terminating client.");
+      clientUI.display("Could not send message to server. Terminating client.");
       quit();
     }
   }
@@ -89,6 +87,31 @@ public class ChatClient extends AbstractClient
     }
     catch(IOException e) {}
     System.exit(0);
+  }
+
+	/**
+	 * This method overrides the one in the superclass.  
+   * It is called each time an exception is thrown by the client's
+	 * thread that is waiting for messages from the server. 
+	 * 
+	 * @param exception
+	 *            the exception raised.
+	 */
+  protected void connectionException(Exception exception)
+  {
+    System.out.println("The server has improperly shut down. This client is quitting...");
+    System.exit(0);
+  }
+
+  /**
+   * This method overrides the one in the superclass. 
+   * It is called after the connection has been closed 
+	 * to perform special processing such as cleaning up 
+   * and terminating, or attempting to reconnect.
+	 */
+  protected void connectionClosed()
+  {
+    System.out.println("The server has shut down. This client is quitting...");
   }
 
 }

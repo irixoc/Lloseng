@@ -45,12 +45,11 @@ public class ClientConsole implements ChatIF
   {
     try 
     {
-      client= new ChatClient(host, port, this);
+      client = new ChatClient(host, port, this);
     } 
     catch(IOException exception) 
     {
-      System.out.println("Error: Can't setup connection!"
-                + " Terminating client.");
+      System.out.println("Error: Can't setup connection!" + " Terminating client.");
       System.exit(1);
     }
   }
@@ -66,11 +65,10 @@ public class ClientConsole implements ChatIF
   {
     try
     {
-      BufferedReader fromConsole = 
-        new BufferedReader(new InputStreamReader(System.in));
+      BufferedReader fromConsole = new BufferedReader(new InputStreamReader(System.in));
       String message;
 
-      while (true) 
+      while (true)
       {
         message = fromConsole.readLine();
         client.handleMessageFromClientUI(message);
@@ -78,8 +76,7 @@ public class ClientConsole implements ChatIF
     } 
     catch (Exception ex) 
     {
-      System.out.println
-        ("Unexpected error while reading from console!");
+      System.out.println("Unexpected error while reading from console!");
     }
   }
 
