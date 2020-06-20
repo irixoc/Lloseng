@@ -90,7 +90,7 @@ public class ChatClient extends AbstractClient
   }
 
 	/**
-	 * This method overrides the one in the superclass.  
+	 * This method overrides the one in the superclass.
    * It is called each time an exception is thrown by the client's
 	 * thread that is waiting for messages from the server. 
 	 * 
@@ -104,11 +104,11 @@ public class ChatClient extends AbstractClient
   }
 
   /**
-   * This method overrides the one in the superclass. 
-   * It is called after the connection has been closed 
-	 * to perform special processing such as cleaning up 
+   * This method overrides the one in the superclass.
+   * It is called after the connection has been closed
+   * to perform special processing such as cleaning up 
    * and terminating, or attempting to reconnect.
-	 */
+   */
   protected void connectionClosed()
   {
     System.out.println("The server has shut down. This client is quitting...");
