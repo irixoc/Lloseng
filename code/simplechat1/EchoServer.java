@@ -15,7 +15,8 @@ import common.*;
  * @author Dr Robert Lagani&egrave;re
  * @author Fran&ccedil;ois B&eacute;langer
  * @author Paul Holden
- * @version July 2000
+ * @author Richard Xiong
+ * @version June 2020
  */
 public class EchoServer extends AbstractServer 
 {
@@ -33,7 +34,7 @@ public class EchoServer extends AbstractServer
    *
    * @param port The port number to connect on.
    */
-  public EchoServer(int port) 
+  public EchoServer(int port)
   {
     super(port);
   }
@@ -47,8 +48,7 @@ public class EchoServer extends AbstractServer
    * @param msg The message received from the client.
    * @param client The connection from which the message originated.
    */
-  public void handleMessageFromClient
-    (Object msg, ConnectionToClient client)
+  public void handleMessageFromClient(Object msg, ConnectionToClient client)
   {
     System.out.println("Message received: " + msg + " from " + client);
     this.sendToAllClients(msg);
@@ -113,10 +113,6 @@ public class EchoServer extends AbstractServer
           {
             System.out.println("Invalid port number.");
           }
-          catch (Exception e)
-          {
-            System.out.println("Unknown exception occurred: " + e.toString());
-          }
         }
         break;
       case "start":
@@ -152,7 +148,7 @@ public class EchoServer extends AbstractServer
     }
     finally 
     {
-      System.out.println("Server has quit.");
+      System.out.println("Server is quitting.");
       System.exit(0);
     }
   }  
@@ -194,7 +190,7 @@ public class EchoServer extends AbstractServer
    * a client has disconnected from the server.
    * @param client the connection connected to the client.
    */
-  synchronized protected void clientDisconnected(ConnectionToClient client) 
+  synchronized protected void clientDisconnected(ConnectionToClient client)
   {
     System.out.println("A client has disconnected.");
   }
@@ -207,18 +203,19 @@ public class EchoServer extends AbstractServer
    * @param client the client that raised the exception.
    * @param Throwable the exception thrown.
    */
-  synchronized protected void clientException(ConnectionToClient client, Throwable exception) 
+  synchronized protected void clientException(ConnectionToClient client, Throwable exception)
   {
     System.out.println("A client has unexpectedly disconnected.");
   }
 
   /**
-   * Hook method called when the server is clased.
-   * The default implementation does nothing. This method may be
-   * overriden by subclasses. When the server is closed while still
+   * This method overrides the one in the superclass.
+   * It is called when the server has closed.
+   * When the server is closed while still
    * listening, serverStopped() will also be called.
    */
-  protected void serverClosed() {
+  protected void serverClosed()
+  {
     System.out.println("Server has closed.");
   }  
   
@@ -231,7 +228,7 @@ public class EchoServer extends AbstractServer
    * @param args[0] The port number to listen on.  Defaults to 5555 
    *          if no argument is entered.
    */
-  public static void main(String[] args) 
+  public static void main(String[] args)
   {
     int port = 0; //Port to listen on
 
@@ -245,6 +242,7 @@ public class EchoServer extends AbstractServer
     }
 	
     EchoServer sv = new EchoServer(port);
+    ServerConsole serverConsole = new ServerConsole(sv);
 
     
     try 
@@ -256,7 +254,6 @@ public class EchoServer extends AbstractServer
       System.out.println("ERROR - Could not listen for clients!");
     }
 
-    ServerConsole serverConsole = new ServerConsole(sv);
     serverConsole.accept();
   }
 }
