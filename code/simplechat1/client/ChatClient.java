@@ -65,9 +65,8 @@ public class ChatClient extends AbstractClient
    */
   public void handleMessageFromClientUI(String message)
   {
-
     if (message.charAt(0) == '#') {
-      command(message.substring(1));
+      handleCommandFromClientUI(message.substring(1));
     } else {
       try
       {
@@ -79,14 +78,14 @@ public class ChatClient extends AbstractClient
         quit();
       }
     }
-
   }
 
-  /**
-   * This method is called when the client receives
-   * a command from the end user.
+ /**
+   * This method handles all commands coming from the clientUI            
+   *
+   * @param command A command from the clientUI.    
    */
-  public void command(String command)
+  public void handleCommandFromClientUI(String command)
   {
     String[] cmd = command.split(" ");
 
@@ -179,7 +178,7 @@ public class ChatClient extends AbstractClient
       closeConnection();
     }
     catch(IOException e) {}
-    System.out.println("Client is quitting.");
+    System.out.println("The client has quit.");
     System.exit(0);
   }
 

@@ -4,6 +4,8 @@
 
 import java.io.*;
 import ocsf.server.*;
+import client.*;
+import common.*;
 
 /**
  * This class overrides some of the methods in the abstract 
@@ -51,7 +53,110 @@ public class EchoServer extends AbstractServer
     System.out.println("Message received: " + msg + " from " + client);
     this.sendToAllClients(msg);
   }
-    
+
+  /**
+   * This method handles all data coming from the UI            
+   *
+   * @param message The message from the UI.    
+   */
+  public void handleMessageFromServerUI(String message)
+  {
+    if (message.charAt(0) == '#') {
+      handleCommandFromServerUI(message.substring(1));
+    } else {
+      String msg = "SERVER MSG > " + message;
+      System.out.println(msg);
+      this.sendToAllClients(msg);
+    }
+
+  }
+
+ /**
+   * This method handles all commands coming from the serverUI            
+   *
+   * @param command A command from the serverUI.    
+   */
+  public void handleCommandFromServerUI(String command)
+  {
+    String[] cmd = command.split(" ");
+
+    switch(cmd[0]) {
+      case "quit":
+        quit();
+        break;
+      case "stop":
+        stopListening();
+        break;
+      case "close":
+        try
+        {
+          close();
+        }
+        catch (IOException e)
+        {
+          System.out.println("Unable to close connection.");
+        }
+        break;        
+      case "setport":
+        if (isListening()) {
+          System.out.println("Error message: cannot set port unless server is closed.");
+        } else {
+          try
+          {
+            setPort(Integer.parseInt(cmd[1]));
+          }
+          catch (ArrayIndexOutOfBoundsException e)
+          {
+            System.out.println("Port number was not entered.");
+          }
+          catch (NumberFormatException e)
+          {
+            System.out.println("Invalid port number.");
+          }
+          catch (Exception e)
+          {
+            System.out.println("Unknown exception occurred: " + e.toString());
+          }
+        }
+        break;
+      case "start":
+        try
+        {
+          listen();
+        }
+        catch (IOException e)
+        {
+          System.out.println("Unable to start server.");
+        }
+        break;
+      case "getport":
+        System.out.println("Port: " + getPort());
+        break;
+      default:
+        System.out.println("Command not recognized.");
+        break;
+    }
+  }
+
+  /**
+   * This method terminates the server.
+   */
+  public void quit()
+  {
+    try
+    {
+      close();
+    }
+    catch(IOException e) {
+      System.out.println("Server was unable to quit.");
+    }
+    finally 
+    {
+      System.out.println("Server has quit.");
+      System.exit(0);
+    }
+  }  
+  
   /**
    * This method overrides the one in the superclass.  Called
    * when the server starts listening for connections.
@@ -104,8 +209,18 @@ public class EchoServer extends AbstractServer
    */
   synchronized protected void clientException(ConnectionToClient client, Throwable exception) 
   {
-    System.out.println("A client has improperly disconnected.");
+    System.out.println("A client has unexpectedly disconnected.");
   }
+
+  /**
+   * Hook method called when the server is clased.
+   * The default implementation does nothing. This method may be
+   * overriden by subclasses. When the server is closed while still
+   * listening, serverStopped() will also be called.
+   */
+  protected void serverClosed() {
+    System.out.println("Server has closed.");
+  }  
   
   //Class methods ***************************************************
   
@@ -130,6 +245,7 @@ public class EchoServer extends AbstractServer
     }
 	
     EchoServer sv = new EchoServer(port);
+
     
     try 
     {
@@ -139,6 +255,9 @@ public class EchoServer extends AbstractServer
     {
       System.out.println("ERROR - Could not listen for clients!");
     }
+
+    ServerConsole serverConsole = new ServerConsole(sv);
+    serverConsole.accept();
   }
 }
 //End of EchoServer class
