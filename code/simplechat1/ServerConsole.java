@@ -47,7 +47,7 @@ public class ServerConsole implements ChatIF
    * This method waits for input from the console.  Once it is 
    * received, it sends it to the server's message handler.
    */
-  public void accept() 
+  public void accept()
   {
     try
     {
@@ -60,7 +60,7 @@ public class ServerConsole implements ChatIF
         server.handleMessageFromServerUI(message);
       }
     } 
-    catch (Exception e) 
+    catch (Exception e)
     {
       System.out.println(e.toString());
       System.out.println("Unexpected error while reading from console!!!");
@@ -73,7 +73,7 @@ public class ServerConsole implements ChatIF
    *
    * @param message The string to be displayed.
    */
-  public void display(String message) 
+  public void display(String message)
   {
     System.out.println("SERVER MSG > " + message);
   }

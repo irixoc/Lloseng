@@ -25,7 +25,14 @@ public class ChatClient extends AbstractClient
    * The interface type variable.  It allows the implementation of 
    * the display method in the client.
    */
-  ChatIF clientUI; 
+  ChatIF clientUI;
+
+  /**
+   * The integer variable loginid records the login id for the
+   * current client's session.
+   */
+  int loginid;
+  final static String loginidPrefix = "#login";
 
   
   //Constructors ****************************************************
@@ -38,11 +45,24 @@ public class ChatClient extends AbstractClient
    * @param clientUI The interface type variable.
    */
   
-  public ChatClient(String host, int port, ChatIF clientUI) throws IOException 
+  public ChatClient(int loginid, String host, int port, ChatIF clientUI) throws IOException
   {
     super(host, port); //Call the superclass constructor
+    this.loginid = loginid;
     this.clientUI = clientUI;
+
     openConnection();
+
+    try
+    {
+      sendToServer(loginidPrefix + " " + loginid);
+    }
+    catch(Exception e)
+    {
+      System.out.println(e.toString());
+      clientUI.display("Could not send message to server. Terminating client.");
+      quit();
+    }
   }
 
   
@@ -97,12 +117,10 @@ public class ChatClient extends AbstractClient
         try
         {
           closeConnection();
-          System.out.println("Connection to server closed.");
         }
         catch (IOException e)
         {
-          System.out.println("Unable to close connection.");
-          System.out.println(e);
+          System.out.println("Client was unable to logoff.");
         }
         break;
       case "sethost":
@@ -116,10 +134,6 @@ public class ChatClient extends AbstractClient
           catch (ArrayIndexOutOfBoundsException e)
           {
             System.out.println("Host was not entered.");
-          }
-          catch (Exception e)
-          {
-            System.out.println(e);
           }
         }
         break;
@@ -139,10 +153,6 @@ public class ChatClient extends AbstractClient
           {
             System.out.println("Invalid port number.");
           }
-          catch (Exception e)
-          {
-            System.out.println(e);
-          }
         }
         break;
       case "login":
@@ -152,8 +162,7 @@ public class ChatClient extends AbstractClient
         }
         catch (IOException e)
         {
-          System.out.println("Unable to connect.");
-          System.out.println(e);
+          System.out.println("Client was unable to login.");
         }
         break;
       case "gethost":

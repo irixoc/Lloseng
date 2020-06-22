@@ -26,6 +26,8 @@ public class EchoServer extends AbstractServer
    * The default port to listen on.
    */
   final public static int DEFAULT_PORT = 5555;
+
+  final static String loginidPrefix = "#login";
   
   //Constructors ****************************************************
   
@@ -50,8 +52,20 @@ public class EchoServer extends AbstractServer
    */
   public void handleMessageFromClient(Object msg, ConnectionToClient client)
   {
-    System.out.println("Message received: " + msg + " from " + client);
-    this.sendToAllClients(msg);
+    String messageFromClient = String.valueOf(msg);
+
+    if (messageFromClient.startsWith(loginidPrefix)) {
+      
+      String loginid = messageFromClient.split(" ")[1];
+      
+      client.setInfo(loginidPrefix, loginid);
+
+      System.out.println("Client<" + client.getInfo(loginidPrefix) + "> has connected.");
+    
+    } else {
+      System.out.println("<" + client.getInfo(loginidPrefix) +"> " + "Message received: " + msg + " from " + client);
+      this.sendToAllClients(client.getInfo(loginidPrefix) +" > " + msg);
+    }
   }
 
   /**
@@ -180,7 +194,7 @@ public class EchoServer extends AbstractServer
    */
   protected void clientConnected(ConnectionToClient client) 
   {
-    System.out.println("A new client has connected.");
+    System.out.println("A client is connecting.");
   }
 
   /**
@@ -192,7 +206,7 @@ public class EchoServer extends AbstractServer
    */
   synchronized protected void clientDisconnected(ConnectionToClient client)
   {
-    System.out.println("A client has disconnected.");
+    System.out.println("Client" + "<" + client.getInfo(loginidPrefix) +">" + " has disconnected.");
   }
   
   /**
@@ -205,7 +219,7 @@ public class EchoServer extends AbstractServer
    */
   synchronized protected void clientException(ConnectionToClient client, Throwable exception)
   {
-    System.out.println("A client has unexpectedly disconnected.");
+    System.out.println("<" + client.getInfo(loginidPrefix) +"> " + "Client has disconnected.");
   }
 
   /**
@@ -242,9 +256,7 @@ public class EchoServer extends AbstractServer
     }
 	
     EchoServer sv = new EchoServer(port);
-    ServerConsole serverConsole = new ServerConsole(sv);
-
-    
+      
     try 
     {
       sv.listen(); //Start listening for connections
@@ -254,6 +266,7 @@ public class EchoServer extends AbstractServer
       System.out.println("ERROR - Could not listen for clients!");
     }
 
+    ServerConsole serverConsole = new ServerConsole(sv);
     serverConsole.accept();
   }
 }
